@@ -1,4 +1,4 @@
--- [[ CLT HUB v2 - BOTÃO MÓVEL ]] --
+-- [[ CLT HUB v2 - EDIÇÃO ESPECIAL ]] --
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
@@ -17,7 +17,7 @@ local _G = {
 
 -- Interface Principal
 local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "CLTHub_V2_Movel"
+ScreenGui.Name = "CLTHub_V2_Final"
 ScreenGui.Parent = CoreGui
 ScreenGui.ResetOnSpawn = false
 
@@ -76,11 +76,11 @@ MainFrame.BackgroundColor3 = Color3.fromRGB(5, 15, 45)
 MainFrame.Size = UDim2.new(0, 500, 0, 420)
 MainFrame.Position = UDim2.new(0.5, -250, 1.2, 0)
 MainFrame.Active = true
-MainFrame.Draggable = true -- Janela também é arrastável
+MainFrame.Draggable = true
 Instance.new("UICorner", MainFrame)
 Instance.new("UIStroke", MainFrame).Color = Color3.fromRGB(0, 120, 255)
 
--- Sidebar e Abas
+-- Sidebar
 local Sidebar = Instance.new("Frame", MainFrame)
 Sidebar.Size = UDim2.new(0, 130, 1, 0)
 Sidebar.BackgroundColor3 = Color3.fromRGB(10, 20, 55)
@@ -88,6 +88,13 @@ Instance.new("UICorner", Sidebar)
 local SidebarLayout = Instance.new("UIListLayout", Sidebar)
 SidebarLayout.Padding = UDim.new(0, 5)
 
+-- Logo
+local Logo = Instance.new("ImageLabel", Sidebar)
+Logo.Size = UDim2.new(0, 110, 0, 110)
+Logo.Image = "rbxassetid://1000104067" 
+Logo.BackgroundTransparency = 1
+
+-- Conteúdo
 local Content = Instance.new("Frame", MainFrame)
 Content.Position = UDim2.new(0, 140, 0, 10)
 Content.Size = UDim2.new(1, -150, 1, -20)
@@ -105,10 +112,10 @@ local TrollTab = CreateTab(); TrollTab.Visible = true
 local ScriptsTab = CreateTab()
 local DiscordTab = CreateTab()
 
--- Lógica de Abrir/Fechar
+-- Alternar Janela
 local isOpen = false
 OpenBtn.MouseButton1Click:Connect(function()
-    if dragging then return end -- Não abre se estiver apenas arrastando
+    if dragging then return end 
     if not isOpen then
         MainFrame:TweenPosition(UDim2.new(0.5, -250, 0.25, 0), "Out", "Back", 0.6)
     else
@@ -117,7 +124,7 @@ OpenBtn.MouseButton1Click:Connect(function()
     isOpen = not isOpen
 end)
 
--- Funções Auxiliares
+-- Helpers
 local function CreateTabBtn(name, callback)
     local btn = Instance.new("TextButton", Sidebar)
     btn.Size = UDim2.new(1, -10, 0, 35); btn.BackgroundColor3 = Color3.fromRGB(0, 90, 230)
@@ -133,7 +140,7 @@ local function CreateActionBtn(name, parent, callback)
     return btn
 end
 
--- --- LISTA DE PLAYERS ---
+-- --- SELEÇÃO DE PLAYER ---
 local ListFrame = Instance.new("ScrollingFrame", TrollTab)
 ListFrame.Size = UDim2.new(1, -10, 0, 110); ListFrame.BackgroundColor3 = Color3.fromRGB(15, 25, 60); Instance.new("UIListLayout", ListFrame)
 local TargetLabel = Instance.new("TextLabel", TrollTab)
@@ -149,7 +156,7 @@ local function RefreshList()
 end
 CreateActionBtn("🔄 Atualizar Lista", TrollTab, RefreshList)
 
--- Funções da Tab Troll
+-- --- FUNÇÕES TROLL ---
 CreateTabBtn("Troll", function() TrollTab.Visible = true; ScriptsTab.Visible = false; DiscordTab.Visible = false end)
 
 CreateActionBtn("Fling Player", TrollTab, function()
@@ -191,11 +198,40 @@ CreateActionBtn("ESP CLT All", TrollTab, function()
     end
 end)
 
+-- FLY CLT COM SISTEMA DE SEGURAR A CARTEIRA
+CreateActionBtn("Fly CLT (On/Off)", TrollTab, function()
+    _G.Fly = not _G.Fly
+    if _G.Fly then
+        local clt = Instance.new("Part", LPlayer.Character)
+        clt.Name = "CLT_HandItem"
+        clt.Size = Vector3.new(0.4, 0.6, 0.1)
+        clt.Color = Color3.fromRGB(0, 0, 180)
+        clt.CanCollide = false
+        local w = Instance.new("Weld", clt)
+        w.Part0 = clt
+        w.Part1 = LPlayer.Character:FindFirstChild("Right Arm") or LPlayer.Character:FindFirstChild("RightHand")
+        w.C0 = CFrame.new(0, 1, 0.5)
+        
+        local bv = Instance.new("BodyVelocity", LPlayer.Character.HumanoidRootPart)
+        bv.MaxForce = Vector3.new(1e6, 1e6, 1e6)
+        
+        spawn(function()
+            while _G.Fly do
+                -- Voa enquanto a CLT estiver no braço
+                bv.Velocity = workspace.CurrentCamera.CFrame.LookVector * 100
+                task.wait()
+            end
+            bv:Destroy()
+            clt:Destroy()
+        end)
+    end
+end)
+
 CreateActionBtn("Versão do CLT HUB", TrollTab, function()
     game:GetService("StarterGui"):SetCore("SendNotification", {Title = "CLT HUB", Text = "Versão v2", Duration = 5})
 end)
 
--- Tabs Adicionais
+-- --- TABS EXTRAS ---
 CreateTabBtn("Scripts", function() TrollTab.Visible = false; ScriptsTab.Visible = true; DiscordTab.Visible = false end)
 CreateActionBtn("Cartola Hub", ScriptsTab, function() setclipboard('loadstring(game:HttpGet("https://raw.githubusercontent.com/Davi999z/Cartola-Hub/refs/heads/main/Brookhaven",true))()') end)
 CreateActionBtn("Lyra Hub", ScriptsTab, function() setclipboard('loadstring(game:HttpGet("https://raw.githubusercontent.com/kayrus999/Lyrapainel/refs/heads/main/Lyrabrookhaven"))()') end)
