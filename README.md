@@ -1,7 +1,8 @@
--- [[ CLT HUB 📘 - v2 ]] --
+-- [[ CLT HUB v2 ]] --
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 local RunService = game:GetService("RunService")
+local CoreGui = game:GetService("CoreGui")
 local LPlayer = Players.LocalPlayer
 
 -- Estados do Script
@@ -17,27 +18,26 @@ local _G = {
 -- Interface Principal
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "CLTHub_V2"
-ScreenGui.Parent = game.CoreGui
+ScreenGui.Parent = CoreGui
 
--- Botão de Abrir (Foto da Carteira)
+-- Botão de Abrir/Fechar (Foto da Carteira de Trabalho)
 local OpenBtn = Instance.new("ImageButton")
 OpenBtn.Name = "OpenBtn"
 OpenBtn.Parent = ScreenGui
-OpenBtn.Size = UDim2.new(0, 75, 0, 100)
+OpenBtn.Size = UDim2.new(0, 80, 0, 110)
 OpenBtn.Position = UDim2.new(0.02, 0, 0.45, 0)
-OpenBtn.Image = "rbxassetid://13837764836" -- ID da Carteira de Trabalho
+OpenBtn.Image = "rbxassetid://1000104060" -- ID da Carteira
 OpenBtn.BackgroundColor3 = Color3.fromRGB(0, 80, 255)
-OpenBtn.Visible = false
+OpenBtn.Visible = true
 Instance.new("UICorner", OpenBtn)
 
--- Janela Principal (Main)
+-- Janela Principal
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
 MainFrame.Parent = ScreenGui
-MainFrame.BackgroundColor3 = Color3.fromRGB(5, 10, 35)
+MainFrame.BackgroundColor3 = Color3.fromRGB(5, 15, 45) -- Azul CLT
 MainFrame.Size = UDim2.new(0, 500, 0, 420)
-MainFrame.Position = UDim2.new(0.5, -250, 1.2, 0) -- Inicia fora para animação de arrastar
-MainFrame.BorderSizePixel = 0
+MainFrame.Position = UDim2.new(0.5, -250, 1.2, 0) -- Inicia fora para animação
 MainFrame.Active = true
 MainFrame.Draggable = true
 Instance.new("UICorner", MainFrame)
@@ -46,21 +46,21 @@ local Stroke = Instance.new("UIStroke", MainFrame)
 Stroke.Color = Color3.fromRGB(0, 120, 255)
 Stroke.Thickness = 2
 
--- Sidebar (Abas)
+-- Sidebar
 local Sidebar = Instance.new("Frame", MainFrame)
 Sidebar.Size = UDim2.new(0, 130, 1, 0)
-Sidebar.BackgroundColor3 = Color3.fromRGB(10, 15, 45)
+Sidebar.BackgroundColor3 = Color3.fromRGB(10, 20, 55)
 Instance.new("UICorner", Sidebar)
 local SidebarLayout = Instance.new("UIListLayout", Sidebar)
 SidebarLayout.Padding = UDim.new(0, 5)
 
--- Logo no Menu
+-- Logo CLT HUB
 local Logo = Instance.new("ImageLabel", Sidebar)
 Logo.Size = UDim2.new(0, 110, 0, 110)
-Logo.Image = "rbxassetid://13837775531" -- ID Logo CLT Hub
+Logo.Image = "rbxassetid://1000104067" 
 Logo.BackgroundTransparency = 1
 
--- Container de Conteúdo
+-- Conteúdo
 local Content = Instance.new("Frame", MainFrame)
 Content.Position = UDim2.new(0, 140, 0, 10)
 Content.Size = UDim2.new(1, -150, 1, -20)
@@ -68,8 +68,8 @@ Content.BackgroundTransparency = 1
 
 local function CreateTab()
     local t = Instance.new("ScrollingFrame", Content)
-    t.Size = UDim2.new(1, 0, 1, 0); t.BackgroundTransparency = 1; t.Visible = false; t.CanvasSize = UDim2.new(0,0,2,0)
-    t.ScrollBarThickness = 3
+    t.Size = UDim2.new(1, 0, 1, 0); t.BackgroundTransparency = 1; t.Visible = false
+    t.CanvasSize = UDim2.new(0,0,2,0); t.ScrollBarThickness = 3
     Instance.new("UIListLayout", t).Padding = UDim.new(0, 8)
     return t
 end
@@ -78,36 +78,37 @@ local TrollTab = CreateTab(); TrollTab.Visible = true
 local ScriptsTab = CreateTab()
 local DiscordTab = CreateTab()
 
--- Animação de Abrir (Arrastar Carteira na Tela)
+-- Animação de Abrir (Arrastar Carteira)
+local isOpen = false
 local function ToggleUI()
-    if MainFrame.Position.Y.Scale > 0.5 then
-        OpenBtn.Visible = false
-        MainFrame:TweenPosition(UDim2.new(0.5, -250, 0.2, 0), "Out", "Back", 0.6)
+    if not isOpen then
+        MainFrame:TweenPosition(UDim2.new(0.5, -250, 0.25, 0), "Out", "Back", 0.6)
     else
         MainFrame:TweenPosition(UDim2.new(0.5, -250, 1.2, 0), "In", "Quad", 0.5)
-        task.wait(0.5)
-        OpenBtn.Visible = true
     end
+    isOpen = not isOpen
 end
 OpenBtn.MouseButton1Click:Connect(ToggleUI)
 
--- Helpers de UI
+-- Helpers
 local function CreateTabBtn(name, callback)
     local btn = Instance.new("TextButton", Sidebar)
-    btn.Size = UDim2.new(1, -10, 0, 35); btn.BackgroundColor3 = Color3.fromRGB(0, 80, 220); btn.Text = name; btn.TextColor3 = Color3.new(1, 1, 1)
-    btn.Font = Enum.Font.SourceSansBold; btn.MouseButton1Click:Connect(callback); Instance.new("UICorner", btn)
+    btn.Size = UDim2.new(1, -10, 0, 35); btn.BackgroundColor3 = Color3.fromRGB(0, 90, 230)
+    btn.Text = name; btn.TextColor3 = Color3.new(1, 1, 1); btn.Font = "SourceSansBold"
+    btn.MouseButton1Click:Connect(callback); Instance.new("UICorner", btn)
 end
 
 local function CreateActionBtn(name, parent, callback)
     local btn = Instance.new("TextButton", parent)
-    btn.Size = UDim2.new(1, -10, 0, 35); btn.BackgroundColor3 = Color3.fromRGB(20, 50, 120); btn.Text = name; btn.TextColor3 = Color3.new(1, 1, 1)
-    btn.MouseButton1Click:Connect(callback); Instance.new("UICorner", btn)
+    btn.Size = UDim2.new(1, -10, 0, 35); btn.BackgroundColor3 = Color3.fromRGB(25, 55, 130)
+    btn.Text = name; btn.TextColor3 = Color3.new(1, 1, 1); btn.MouseButton1Click:Connect(callback)
+    Instance.new("UICorner", btn)
     return btn
 end
 
--- --- SISTEMA DE SELEÇÃO DE PLAYER ---
+-- --- SELEÇÃO DE PLAYER ---
 local ListFrame = Instance.new("ScrollingFrame", TrollTab)
-ListFrame.Size = UDim2.new(1, -10, 0, 110); ListFrame.BackgroundColor3 = Color3.fromRGB(15, 25, 55); Instance.new("UIListLayout", ListFrame)
+ListFrame.Size = UDim2.new(1, -10, 0, 110); ListFrame.BackgroundColor3 = Color3.fromRGB(15, 25, 60); Instance.new("UIListLayout", ListFrame)
 
 local TargetLabel = Instance.new("TextLabel", TrollTab)
 TargetLabel.Size = UDim2.new(1,-10,0,25); TargetLabel.Text = "Alvo: Nenhum"; TargetLabel.TextColor3 = Color3.new(0,1,1); TargetLabel.BackgroundTransparency = 1
@@ -116,7 +117,7 @@ local function RefreshList()
     for _, v in pairs(ListFrame:GetChildren()) do if v:IsA("TextButton") then v:Destroy() end end
     for _, p in pairs(Players:GetPlayers()) do
         local pBtn = Instance.new("TextButton", ListFrame)
-        pBtn.Size = UDim2.new(1, 0, 0, 25); pBtn.Text = p.DisplayName; pBtn.BackgroundColor3 = Color3.fromRGB(30, 65, 150); pBtn.TextColor3 = Color3.new(1, 1, 1)
+        pBtn.Size = UDim2.new(1, 0, 0, 25); pBtn.Text = p.DisplayName; pBtn.BackgroundColor3 = Color3.fromRGB(35, 75, 160); pBtn.TextColor3 = Color3.new(1, 1, 1)
         pBtn.MouseButton1Click:Connect(function()
             _G.SelectedPlayer = p
             TargetLabel.Text = "Alvo: " .. p.DisplayName
@@ -125,7 +126,7 @@ local function RefreshList()
 end
 CreateActionBtn("🔄 Atualizar Lista", TrollTab, RefreshList)
 
--- --- ABA TROLL (OPÇÕES) ---
+-- --- FUNÇÕES TROLL ---
 CreateTabBtn("Troll", function() TrollTab.Visible = true; ScriptsTab.Visible = false; DiscordTab.Visible = false end)
 
 CreateActionBtn("Fling Player", TrollTab, function()
@@ -165,8 +166,8 @@ CreateActionBtn("ESP CLT All", TrollTab, function()
                 t.Size = UDim2.new(1, 0, 1, 0); t.BackgroundTransparency = 1; t.Text = "📘 CLT DESPREGADO"; t.TextScaled = true; t.Font = "SourceSansBold"
                 spawn(function()
                     while _G.Esp and b.Parent do
-                        t.TextColor3 = Color3.fromRGB(0, 100, 255); task.wait(0.3)
-                        t.TextColor3 = Color3.fromRGB(0, 0, 0); task.wait(0.3)
+                        t.TextColor3 = Color3.fromRGB(0, 120, 255); task.wait(0.4)
+                        t.TextColor3 = Color3.fromRGB(0, 0, 0); task.wait(0.4)
                     end
                     b:Destroy()
                 end)
@@ -178,20 +179,11 @@ end)
 CreateActionBtn("Fly CLT (On/Off)", TrollTab, function()
     _G.Fly = not _G.Fly
     if _G.Fly then
-        local clt = Instance.new("Part", LPlayer.Character); clt.Size = Vector3.new(0.4, 0.6, 0.1); clt.Color = Color3.new(0, 0, 0.6)
+        local clt = Instance.new("Part", LPlayer.Character); clt.Size = Vector3.new(0.4, 0.6, 0.1); clt.Color = Color3.new(0, 0, 0.7)
         local w = Instance.new("Weld", clt); w.Part0 = clt; w.Part1 = LPlayer.Character:FindFirstChild("Right Arm") or LPlayer.Character:FindFirstChild("RightHand")
         w.C0 = CFrame.new(0, 1, 0.5)
         local bv = Instance.new("BodyVelocity", LPlayer.Character.HumanoidRootPart); bv.MaxForce = Vector3.new(1e6, 1e6, 1e6)
         spawn(function() while _G.Fly do bv.Velocity = workspace.CurrentCamera.CFrame.LookVector * 100; task.wait() end bv:Destroy(); clt:Destroy() end)
-    end
-end)
-
-CreateActionBtn("Troll Animation (Speed & Dance)", TrollTab, function()
-    _G.Troll = not _G.Troll
-    LPlayer.Character.Humanoid.WalkSpeed = _G.Troll and 130 or 16
-    if _G.Troll then
-        local anim = Instance.new("Animation"); anim.AnimationId = "rbxassetid://337960820"; local load = LPlayer.Character.Humanoid:LoadAnimation(anim); load:Play()
-        spawn(function() while _G.Troll do task.wait() end load:Stop() end)
     end
 end)
 
@@ -221,7 +213,5 @@ CreateActionBtn("Discord do CLT Hub (Copiar Link)", DiscordTab, function()
     setclipboard("https://discord.gg/gUJjJfD9f3")
 end)
 
--- Inicialização
+-- Iniciar
 RefreshList()
-ToggleUI() -- Começa fechado para mostrar a animação ao abrir
-
